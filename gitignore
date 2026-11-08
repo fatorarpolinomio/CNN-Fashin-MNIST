@@ -1,0 +1,49 @@
+# ---------- Ambiente virtual ----------
+.venv/
+venv/
+env/
+
+# ---------- Python ----------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ---------- Jupyter ----------
+.ipynb_checkpoints/
+
+# ---------- Dados ----------
+# Fashion MNIST é baixado automaticamente pelo torchvision
+data/
+
+# ---------- Saídas de treino ----------
+# Os arquivos de outputs/ (pesos, CSVs, matriz de confusão) são versionados
+# porque fazem parte da entrega e são pequenos. Ignore apenas temporários:
+outputs/**/tmp/
+outputs/**/*.tmp
+runs/
+lightning_logs/
+wandb/
+
+# ---------- Vídeos e arquivos pesados ----------
+# Vídeos vão direto para o e-Disciplinas (ou repositório público), não para o Git
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.zip
+
+# ---------- Scripts auxiliares (não fazem parte da entrega) ----------
+criar_issues.sh
+
+# ---------- Editores e IDEs ----------
+.vscode/
+.idea/
+*.swp
+
+# ---------- Sistema operacional ----------
+.DS_Store
+Thumbs.db
+desktop.ini
