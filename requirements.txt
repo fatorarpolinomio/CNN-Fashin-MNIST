@@ -1,0 +1,18 @@
+# Framework de deep learning
+torch
+torchvision
+
+# Dados, métricas e gráficos
+numpy
+pandas
+scikit-learn        # matriz de confusão, métricas
+matplotlib          # curvas de erro, matriz de confusão
+seaborn             # (opcional) visual da matriz de confusão
+
+# Descritores de imagem (HOG, LBP). Citar na entrega: doi 10.7717/peerj.453
+scikit-image
+opencv-python       # (opcional) alternativa para descritores
+
+# Utilitários
+pyyaml              # hiperparâmetros em arquivo
+tqdm                # barra de progresso no treino (útil no vídeo)
