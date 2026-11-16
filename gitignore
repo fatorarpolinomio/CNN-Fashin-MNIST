@@ -17,6 +17,11 @@ __pycache__/
 # ---------- Dados ----------
 # Fashion MNIST é baixado automaticamente pelo torchvision
 data/
+# Garante que o dataset seja ignorado mesmo se for baixado fora de data/
+# (ex.: root="." ou root="../data" executando de outra pasta)
+FashionMNIST/
+*-ubyte
+*-ubyte.gz
 
 # ---------- Saídas de treino ----------
 # Os arquivos de outputs/ (pesos, CSVs, matriz de confusão) são versionados
