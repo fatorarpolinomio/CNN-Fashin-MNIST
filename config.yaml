@@ -1,2 +1,3 @@
+seed: 42
 dados:
   batch_size: 64
