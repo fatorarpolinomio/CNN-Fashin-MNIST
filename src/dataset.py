@@ -11,9 +11,9 @@ e filtro de classes para a tarefa binária.
 
 import torch
 from torch.utils.data import DataLoader
+from torch.utils.data.dataset import random_split
 from torchvision import datasets
 from torchvision.transforms import v2
-
 
 CLASSES = [
     "T-shirt/top",
@@ -39,8 +39,21 @@ def get_transform():
 
     return transform
 
-# Função para baixar o dataset
-def download_fashionMNIST():
+def split_train_val(training_data, seed):
+
+    # Definindo seed
+    generator = torch.Generator().manual_seed(seed)
+
+    # Particionando dataset de treinamento
+    # 50000 pontos de dados e 10000 pontos, respectivamente
+    # treino 50.000, validação 10.000 e teste 10.000,
+    # ou seja, ≈ 71%, 14% e 14% do total de 70.000
+    training_data, validation_data = random_split(training_data, [50000, 10000], generator)
+
+    return training_data, validation_data
+
+# Função para carregar o dataset
+def load_fashionMNIST(seed):
     # O FashionMNIST é disponibilizado pelo torchvision, então podemos baixar diretamente:
     # Baixando dados de treinamento
     training_data = datasets.FashionMNIST(
@@ -49,6 +62,9 @@ def download_fashionMNIST():
         download=True,
         transform=get_transform(),
     )
+
+    training_data, validation_data = split_train_val(training_data, seed)
+
     # Baixando dados de teste
     test_data = datasets.FashionMNIST(
         root="../data",
@@ -56,10 +72,10 @@ def download_fashionMNIST():
         download=True,
         transform=get_transform(),
     )
-    return training_data, test_data
+    return training_data, validation_data, test_data
 
 # Função para criar dataloaders, o foco aqui é em otimização do processamento
-def create_dataloaders(config, training_data, test_data):
+def create_dataloaders(config, training_data, validation_data, test_data):
 
     # Definindo um batch_size a partir do valor que vem de config.yaml.
     # Cada elemento no iterável do dataloader
@@ -68,7 +84,8 @@ def create_dataloaders(config, training_data, test_data):
     batch_size = config["dados"]["batch_size"]
 
     # Criando data loaders, passando os datasets como argumento
-    train_dataloader = DataLoader(training_data, batch_size=batch_size) # dataloader dos dados de treino
+    train_dataloader = DataLoader(training_data, batch_size=batch_size, shuffle=True) # dataloader dos dados de treino
     test_dataloader = DataLoader(test_data, batch_size=batch_size) # dataloader dos dados de teste
+    validation_dataloader = DataLoader(validation_data, batch_size=batch_size) # dataloader dos dados de validação
 
-    return train_dataloader, test_dataloader
+    return train_dataloader, validation_dataloader, test_dataloader
