@@ -14,6 +14,9 @@ from torch.utils.data import DataLoader
 from torch.utils.data.dataset import random_split
 from torchvision import datasets
 from torchvision.transforms import v2
+from pathlib import Path
+
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"   # <raiz>/data, não depende de onde você roda
 
 CLASSES = [
     "T-shirt/top",
@@ -45,7 +48,6 @@ def split_train_val(training_data, seed):
     generator = torch.Generator().manual_seed(seed)
 
     # Particionando dataset de treinamento
-    # 50000 pontos de dados e 10000 pontos, respectivamente
     # treino 50.000, validação 10.000 e teste 10.000,
     # ou seja, ≈ 71%, 14% e 14% do total de 70.000
     training_data, validation_data = random_split(training_data, [50000, 10000], generator)
@@ -57,7 +59,7 @@ def load_fashionMNIST(seed):
     # O FashionMNIST é disponibilizado pelo torchvision, então podemos baixar diretamente:
     # Baixando dados de treinamento
     training_data = datasets.FashionMNIST(
-        root="../data",
+        root=DATA_DIR,
         train=True,
         download=True,
         transform=get_transform(),
@@ -67,7 +69,7 @@ def load_fashionMNIST(seed):
 
     # Baixando dados de teste
     test_data = datasets.FashionMNIST(
-        root="../data",
+        root=DATA_DIR,
         train=False,
         download=True,
         transform=get_transform(),
@@ -82,9 +84,10 @@ def create_dataloaders(config, training_data, validation_data, test_data):
     # retornará um lote de características e rótulos com o valor especificado
     # em config.yaml
     batch_size = config["dados"]["batch_size"]
+    g = torch.Generator().manual_seed(config["seed"])
 
     # Criando data loaders, passando os datasets como argumento
-    train_dataloader = DataLoader(training_data, batch_size=batch_size, shuffle=True) # dataloader dos dados de treino
+    train_dataloader = DataLoader(training_data, batch_size=batch_size, shuffle=True, generator=g) # dataloader dos dados de treino
     test_dataloader = DataLoader(test_data, batch_size=batch_size) # dataloader dos dados de teste
     validation_dataloader = DataLoader(validation_data, batch_size=batch_size) # dataloader dos dados de validação
 
