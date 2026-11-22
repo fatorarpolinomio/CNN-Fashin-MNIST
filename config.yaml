@@ -1,3 +1,16 @@
 seed: 42
 dados:
   batch_size: 64
+
+# Tarefa binária
+# Cada lado é uma Lista de nomes de classes; mais de um nome forma uma composição.
+# Nomes válidos: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt,
+# Sneaker, Bag, Ankle boot.
+# classe_0 recebe o rótulo 0 e classe_1 recebe o rótulo 1.
+binario:
+  classe_0: ["T-shirt/top"]
+  classe_1: ["Shirt"]        # par difícil (formas parecidas)
+  # Exemplos para trocar:
+  #   par fácil:   classe_0: ["Trouser"]  classe_1: ["Bag"]
+  #   composição:  classe_0: ["T-shirt/top", "Pullover", "Coat", "Shirt"]
+  #                classe_1: ["Sandal", "Sneaker", "Ankle boot"]

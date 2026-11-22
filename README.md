@@ -32,6 +32,15 @@ python scripts/run_hog.py          # variação com HOG
 
 Os hiperparâmetros (taxa de aprendizado, épocas, batch size, otimizador, classes do teste binário) ficam em `config.yaml`. O Fashion MNIST é baixado automaticamente em `data/` na primeira execução.
 
+## Como testar
+
+```bash
+python tests/test_binario.py
+```
+
+Roda os testes do filtro binário e imprime as contagens por partição.
+Execute sempre a partir da raiz do projeto.
+
 ## Estrutura do projeto
 
 ```text
@@ -40,6 +49,7 @@ scripts/    scripts de execução de cada experimento
 outputs/    arquivos de saída de cada experimento
 docs/       checklists e justificativas das escolhas
 video/      roteiro do vídeo 2
+tests/      testes automáticos do filtro de classes
 ```
 
 ## Arquivos de saída
