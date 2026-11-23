@@ -10,8 +10,6 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 
 import torch
 from torch import nn
-import model
-import dataset
 
 # Laço de repetição para treinamento
 def train_loop(train_dataloader, model, loss_function, optimizer):
@@ -33,7 +31,7 @@ def train_loop(train_dataloader, model, loss_function, optimizer):
 
         if batch % 100 == 0:
             # Printando a loss atual
-            loss, current = loss.item(), batch * batch_size + len(X)
+            loss, current = loss.item(), batch * train_dataloader.batch_size + len(X)
             print(f"Loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
 def test_loop(test_dataloader, model, loss_function, validation=False):
@@ -58,10 +56,19 @@ def test_loop(test_dataloader, model, loss_function, validation=False):
     else:
         print(f"Validation Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
-def model_training(train_dataloader, test_dataloader, loss_function, optimizer, epochs : int):
+def model_training(
+    model,
+    train_dataloader,
+    validation_dataloader,
+    test_dataloader,
+    loss_function,
+    optimizer,
+    epochs : int
+):
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------")
         train_loop(train_dataloader, model, loss_function, optimizer)
-        test_loop(test_dataloader, model, loss_function, validation=False)
-        test_loop(test_dataloader, model, loss_function, validation=True)
-    print("Treino finalizado!")
+        test_loop(validation_dataloader, model, loss_function, validation=True)
+
+    test_loop(test_dataloader, model, loss_function, validation=False)
+    print("Finished!")
