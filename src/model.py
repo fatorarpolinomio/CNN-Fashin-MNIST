@@ -8,11 +8,9 @@ Integrantes:
 model.py: arquitetura da CNN (camadas de convolução e pooling, camadas densas e camada de saída).
 """
 
-import os
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
-from torchvision import datasets, transforms
 
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
