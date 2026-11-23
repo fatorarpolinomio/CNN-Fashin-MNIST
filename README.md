@@ -32,6 +32,15 @@ python scripts/run_hog.py          # variação com HOG
 
 Os hiperparâmetros (taxa de aprendizado, épocas, batch size, otimizador, classes do teste binário) ficam em `config.yaml`. O Fashion MNIST é baixado automaticamente em `data/` na primeira execução.
 
+## Como testar
+
+```bash
+python tests/test_binario.py
+python tests/test_utils.py
+```
+
+Execute sempre a partir da raiz do projeto.
+
 ## Estrutura do projeto
 
 ```text
@@ -40,6 +49,7 @@ scripts/    scripts de execução de cada experimento
 outputs/    arquivos de saída de cada experimento
 docs/       checklists e justificativas das escolhas
 video/      roteiro do vídeo 2
+tests/      testes automáticos do filtro de classes
 ```
 
 ## Arquivos de saída
@@ -52,6 +62,12 @@ Cada experimento gera, em `outputs/<experimento>/`:
 - `erro_por_iteracao.csv`: erro a cada iteração/época
 - `saidas_teste.csv`: saídas da rede para cada dado de teste
 - `matriz_confusao.png`: matriz de confusão do teste
+
+## Contribuidores
+
+<a href="https://github.com/fatorarpolinomio/CNN-Fashin-MNIST/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=fatorarpolinomio/CNN-Fashin-MNIST" alt="CNN-Fashin-MNIST contributors" />
+</a>
 
 ## Referências
 

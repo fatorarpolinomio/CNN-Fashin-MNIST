@@ -5,7 +5,7 @@ Integrantes:
     Lucas Neves Souza, Nro. USP: 15577627
     Willian Jefferson Farias, Nro. USP: 15642665
 
-model.py: modelo propriamente dito, estruturação da rede neural
+model.py: arquitetura da CNN (camadas de convolução e pooling, camadas densas e camada de saída).
 """
 
 import os
