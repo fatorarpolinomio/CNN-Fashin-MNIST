@@ -12,7 +12,7 @@ tests/test_binario.py: testes do filtro de classes e do remapeamento de rótulos
     pytest tests/                     # com o pytest estiver instalado
 
 Os testes usam o Fashion MNIST real (baixado em data/ na primeira execução) e
-conferem as contagens Eefetivamente obtidas em cada partição, porque o
+conferem as contagens efetivamente obtidas em cada partição, porque o
 random_split não é estratificado
 """
 
@@ -54,9 +54,7 @@ PARES = [
 # Utilitários
 
 def ler_config():
-    # Lê o config.yaml direto com o yaml; trocar por utils.load_config quando ele for implementado (TODO)
-    with open(RAIZ / "config.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+    return load_config()
 
 
 @lru_cache(maxsize=1)

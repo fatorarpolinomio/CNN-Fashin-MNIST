@@ -2,6 +2,13 @@ seed: 42
 dados:
   batch_size: 64
 
+# Hiperparâmetros de treino (valem para os três experimentos)
+# Valores *provisórios* de partida:
+treino:
+  otimizador: adam   # "adam" ou "sgd" (em minúsculas)
+  lr: 0.001          # taxa de aprendizado
+  epocas: 10
+
 # Tarefa binária
 # Cada lado é uma Lista de nomes de classes; mais de um nome forma uma composição.
 # Nomes válidos: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt,

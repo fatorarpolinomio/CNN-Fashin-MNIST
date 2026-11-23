@@ -36,9 +36,9 @@ Os hiperparâmetros (taxa de aprendizado, épocas, batch size, otimizador, class
 
 ```bash
 python tests/test_binario.py
+python tests/test_utils.py
 ```
 
-Roda os testes do filtro binário e imprime as contagens por partição.
 Execute sempre a partir da raiz do projeto.
 
 ## Estrutura do projeto
@@ -62,6 +62,12 @@ Cada experimento gera, em `outputs/<experimento>/`:
 - `erro_por_iteracao.csv`: erro a cada iteração/época
 - `saidas_teste.csv`: saídas da rede para cada dado de teste
 - `matriz_confusao.png`: matriz de confusão do teste
+
+## Contribuidores
+
+<a href="https://github.com/fatorarpolinomio/CNN-Fashin-MNIST/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=fatorarpolinomio/CNN-Fashin-MNIST" alt="CNN-Fashin-MNIST contributors" />
+</a>
 
 ## Referências
 
