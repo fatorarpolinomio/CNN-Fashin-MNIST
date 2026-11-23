@@ -58,7 +58,7 @@ class NeuralNetwork(nn.Module):
             # MaxPool2D, reduzindo o tamanho dos tensores de saída. Saída: 32 x 6 x 6
             nn.MaxPool2d(kernel_size=3, stride=2)
         )
-        self.bloco3 = nn.Sequential(
+        self.classificador = nn.Sequential(
 
             # Formato de entrada: 32 x 6 x 6
             # Camada para achatar os tensores em uma única dimensão. Saída: 32 x 6 x 6 = 1.152
@@ -79,5 +79,5 @@ class NeuralNetwork(nn.Module):
     def forward(self, x):
         saida_bloco1 = self.bloco1(x)
         saida_bloco2 = self.bloco2(saida_bloco1)
-        saida = self.bloco3(saida_bloco2)
+        saida = self.classificador(saida_bloco2)
         return saida
