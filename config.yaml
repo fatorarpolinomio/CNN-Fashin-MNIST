@@ -2,6 +2,12 @@ seed: 42
 dados:
   batch_size: 64
 
+# Hiperparâmetros do modelo
+modelo:
+  filtros_bloco1: 16
+  filtros_bloco2: 32
+  neuronios_densa: 128
+
 # Hiperparâmetros de treino (valem para os três experimentos)
 # Valores *provisórios* de partida:
 treino:
