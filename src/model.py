@@ -16,6 +16,7 @@ from torch.utils.data import DataLoader
 def get_device_for_training():
     device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
     print(f"Usando o dispositivo: {device}")
+    return device
 
 # Definindo nossa rede neural e inicializando as suas camadas em __init__
 # Um bloco é um conjunto de camadas aplicadas em sequência
