@@ -21,15 +21,22 @@ def get_device_for_training():
 # Definindo nossa rede neural e inicializando as suas camadas em __init__
 # Um bloco é um conjunto de camadas aplicadas em sequência
 class NeuralNetwork(nn.Module):
-    def __init__(self, num_classes=10): # <- Parametrizável (padrão 10, mas aceita 2)
+    def __init__(self, config, num_classes=10): # <- Parametrizável (padrão 10, mas aceita 2)
         super().__init__()
+
+        # Buscando os hiperparâmetros definidos no config.yaml
+        cfg = config["modelo"]
+        f1 = cfg["filtros_bloco1"] # Quantidade de filtros do primeiro bloco
+        f2 = cfg["filtros_bloco2"] # Quantidade de filtros do segundo bloco
+        n_densa = cfg["neuronios_densa"] # Quantidade de neurônios da camada densa
+
         self.bloco1 = nn.Sequential(
 
             # Formato de entrada: 1 x 28 x 28
             # Aplicando convolução 2D sobre as entradas. Saída: 16 x 28 x 28
             nn.Conv2d(
                 in_channels=1, # As imagens de entrada do Fashion-MNIST estão em escala de cinza (1 único canal de intensidade)
-                out_channels=16, # quantos kernels queremos utilizar
+                out_channels=f1, # quantos kernels queremos utilizar
                 kernel_size=(3, 3), # tamanho do kernel (3x3)
                 stride=1, # o kernel se desloca de um em um pixel
                 padding=1 # borda de 1 pixel com zeros ao redor da imagem
@@ -46,8 +53,8 @@ class NeuralNetwork(nn.Module):
             # Formato de entrada: 16 x 13 x 13
             # Aplicando convolução 2D sobre as saídas do bloco anterior. Saída: 32 x 13 x 13
             nn.Conv2d(
-                in_channels=16, # número de canais de saída do bloco anterior,
-                out_channels=32, # número de kernels desta convolução
+                in_channels=f1, # número de canais de saída do bloco anterior,
+                out_channels=f2, # número de kernels desta convolução
                 kernel_size=(3, 3), # tamanho do kernel (3x3)
                 stride=1,
                 padding=1
@@ -67,13 +74,13 @@ class NeuralNetwork(nn.Module):
 
             # Camada densa para calcular logits
             # 1ª camada densa (oculta). Saída: 128
-            nn.Linear(in_features=1152, out_features=128, bias=True),
+            nn.Linear(in_features=f2 * 6 * 6, out_features=n_densa, bias=True),
 
             # Função de ativação
             nn.ReLU(),
 
             # 2ª camada densa (saída parametrizável). Saída: num_classes
-            nn.Linear(in_features=128, out_features=num_classes, bias=True)
+            nn.Linear(in_features=n_densa, out_features=num_classes, bias=True)
         )
 
 
