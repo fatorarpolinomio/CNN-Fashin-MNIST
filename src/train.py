@@ -11,6 +11,36 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 import torch
 from torch import nn
 
+# Classe para implementar a parada antecipada
+class EarlyStopping:
+    def __init__(self, patience=5, delta=0, verbose=False):
+        self.patience = patience
+        self.delta = delta
+        self.verbose = verbose
+        self.best_loss = None
+        self.no_improvement_count = 0
+        self.stop_training = False
+
+    def check_early_stop(self, val_loss):
+
+        if self.best_loss is None or val_loss < self.best_loss - self.delta:
+            # Guardando a melhor loss que apareceu durante a validação
+            self.best_loss = val_loss
+            # Zerando contador de ausência de melhorias, dado que uma melhoria aconteceu
+            self.no_improvement_count = 0
+        else:
+            # Sempre que a validation loss falhar na melhoria além do delta,
+            # incrementamos no_improvement_count
+            self.no_improvement_count += 1
+
+            # Se alcançarmos o limite da paciência, fazemos a parada
+            if self.no_improvement_count >= self.patience:
+                self.stop_training = True
+
+                # Opção verbosa, para ajudar com depuração
+                if self.verbose:
+                    print("Stopping early as no improvement has been observed.")
+
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
     device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
@@ -69,6 +99,8 @@ def test_loop(test_dataloader, model, loss_function, device, validation=False):
         print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
     else:
         print(f"Validation Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+
+
 
 def model_training(
     model,
