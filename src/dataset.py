@@ -64,8 +64,6 @@ def load_fashionMNIST(seed):
         transform=get_transform(),
     )
 
-    training_data, validation_data = split_train_val(training_data, seed)
-
     # Baixando dados de teste
     test_data = datasets.FashionMNIST(
         root=DATA_DIR,
@@ -73,7 +71,7 @@ def load_fashionMNIST(seed):
         download=True,
         transform=get_transform(),
     )
-    return training_data, validation_data, test_data
+    return training_data, test_data
 
 # Função para converter nomes de classes em índices
 def classes_para_indices(nomes, rotulo="classe"):
@@ -128,7 +126,7 @@ def filter_binary_classes(dataset, classes_0, classes_1):
 
     #classes_0: lista de nomes de classes que formam a classe negativa (rótulo 0).
     #classes_1: lista de nomes de classes que formam a classe positiva (rótulo 1).
-    
+
     indices_0 = classes_para_indices(classes_0, "classe_0")
     indices_1 = classes_para_indices(classes_1, "classe_1")
 
