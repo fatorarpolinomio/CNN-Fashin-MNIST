@@ -18,13 +18,16 @@ def get_device_for_training():
     return device
 
 # Laço de repetição para treinamento
-def train_loop(train_dataloader, model, loss_function, optimizer):
+def train_loop(train_dataloader, model, loss_function, optimizer, device):
     size = len(train_dataloader.dataset)
 
     # Selecionando modo de treino do modelo
     model.train()
 
     for batch, (X, y) in enumerate(train_dataloader):
+
+        # Utilizando dispositivo de aceleração
+        X, y = X.to(device), y.to(device)
 
         # Computando predição e perda
         prediction = model(X)
@@ -40,7 +43,7 @@ def train_loop(train_dataloader, model, loss_function, optimizer):
             loss, current = loss.item(), batch * train_dataloader.batch_size + len(X)
             print(f"Loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
-def test_loop(test_dataloader, model, loss_function, validation=False):
+def test_loop(test_dataloader, model, loss_function, device, validation=False):
 
     # Selecionando o modo de avaliação do modelo
     model.eval()
@@ -50,6 +53,11 @@ def test_loop(test_dataloader, model, loss_function, validation=False):
 
     with torch.no_grad():
         for X, y in test_dataloader:
+
+            # Utilizando dispositivo de aceleração
+            X, y = X.to(device), y.to(device)
+
+            # Gerando predição
             pred = model(X)
             test_loss += loss_function(pred, y).item()
             correct += (pred.argmax(1) == y).type(torch.float).sum().item()
@@ -69,12 +77,13 @@ def model_training(
     test_dataloader,
     loss_function,
     optimizer,
+    device,
     epochs : int
 ):
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------")
-        train_loop(train_dataloader, model, loss_function, optimizer)
-        test_loop(validation_dataloader, model, loss_function, validation=True)
+        train_loop(train_dataloader, model, loss_function, optimizer, device)
+        test_loop(validation_dataloader, model, loss_function, device, validation=True)
 
-    test_loop(test_dataloader, model, loss_function, validation=False)
+    test_loop(test_dataloader, model, loss_function, device, validation=False)
     print("Finished!")
