@@ -11,6 +11,12 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 import torch
 from torch import nn
 
+# Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
+def get_device_for_training():
+    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
+    print(f"Usando o dispositivo: {device}")
+    return device
+
 # Laço de repetição para treinamento
 def train_loop(train_dataloader, model, loss_function, optimizer):
     size = len(train_dataloader.dataset)

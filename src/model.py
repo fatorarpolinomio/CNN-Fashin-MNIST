@@ -11,12 +11,6 @@ model.py: arquitetura da CNN (camadas de convolução e pooling, camadas densas 
 import torch
 from torch import nn
 
-# Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
-def get_device_for_training():
-    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
-    print(f"Usando o dispositivo: {device}")
-    return device
-
 # Definindo nossa rede neural e inicializando as suas camadas em __init__
 # Um bloco é um conjunto de camadas aplicadas em sequência
 class NeuralNetwork(nn.Module):
