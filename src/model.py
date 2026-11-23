@@ -10,7 +10,6 @@ model.py: arquitetura da CNN (camadas de convolução e pooling, camadas densas 
 
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
 
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
@@ -33,7 +32,7 @@ class NeuralNetwork(nn.Module):
         self.bloco1 = nn.Sequential(
 
             # Formato de entrada: 1 x 28 x 28
-            # Aplicando convolução 2D sobre as entradas. Saída: 16 x 28 x 28
+            # Aplicando convolução 2D sobre as entradas. Saída: f1 x 28 x 28
             nn.Conv2d(
                 in_channels=1, # As imagens de entrada do Fashion-MNIST estão em escala de cinza (1 único canal de intensidade)
                 out_channels=f1, # quantos kernels queremos utilizar
@@ -45,13 +44,13 @@ class NeuralNetwork(nn.Module):
             # Função de ativação
             nn.ReLU(),
 
-            # MaxPool2D, reduzindo o tamanho dos tensores de saída. Saída: 16 x 13 x 13
+            # MaxPool2D, reduzindo o tamanho dos tensores de saída. Saída: f1 x 13 x 13
             nn.MaxPool2d(kernel_size=3, stride=2)
         )
         self.bloco2 = nn.Sequential(
 
-            # Formato de entrada: 16 x 13 x 13
-            # Aplicando convolução 2D sobre as saídas do bloco anterior. Saída: 32 x 13 x 13
+            # Formato de entrada: f1 x 13 x 13
+            # Aplicando convolução 2D sobre as saídas do bloco anterior. Saída: f2 x 13 x 13
             nn.Conv2d(
                 in_channels=f1, # número de canais de saída do bloco anterior,
                 out_channels=f2, # número de kernels desta convolução
@@ -63,18 +62,18 @@ class NeuralNetwork(nn.Module):
             # Função de ativação
             nn.ReLU(),
 
-            # MaxPool2D, reduzindo o tamanho dos tensores de saída. Saída: 32 x 6 x 6
+            # MaxPool2D, reduzindo o tamanho dos tensores de saída. Saída: f2 x 6 x 6
             nn.MaxPool2d(kernel_size=3, stride=2)
         )
         self.classificador = nn.Sequential(
 
-            # Formato de entrada: 32 x 6 x 6
-            # Camada para achatar os tensores em uma única dimensão. Saída: 32 x 6 x 6 = 1.152
+            # Formato de entrada: f2 x 6 x 6
+            # Camada para achatar os tensores em uma única dimensão. Saída: f2 x 6 x 6 = número inteiro
             nn.Flatten(),
 
             # Camada densa para calcular logits
-            # 1ª camada densa (oculta). Saída: 128
-            nn.Linear(in_features=f2 * 6 * 6, out_features=n_densa, bias=True),
+            # 1ª camada densa (oculta). Saída: n_densa
+            nn.Linear(in_features=f2 * 6 * 6, out_features=n_densa, bias=True), # 6 x 6 depende do kernel/padding/pooling dos blocos (ver comentários acima)
 
             # Função de ativação
             nn.ReLU(),
