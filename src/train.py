@@ -60,7 +60,6 @@ def get_device_for_training():
 
 # Laço de repetição para treinamento
 def train_loop(train_dataloader, model, loss_function, optimizer, device):
-    size = len(train_dataloader.dataset)
 
     # Selecionando modo de treino do modelo
     model.train()
@@ -135,14 +134,13 @@ def model_training(
     loss_function,
     optimizer,
     device,
-    config,
-    epochs : int
+    config
 ):
     # Buscando os hiperparâmetros definidos no config.yaml
-    cfg = config["parada"]
-    patience = cfg["patience"] # Número de paciência
-    delta = cfg["delta"] # mudança mínima na perda
-    verbose = cfg["verbose"] # com ou sem print de depuração
+    patience = config["parada"]["patience"] # Número de paciência
+    delta = config["parada"]["delta"] # mudança mínima na perda
+    verbose = config["parada"]["verbose"] # com ou sem print de depuração
+    epochs = config["treino"]["epocas"]
 
     # Inicializando mecanismo de parada antecipada
     early_stopping = EarlyStopping(model, patience=patience, delta=delta, verbose=verbose)
