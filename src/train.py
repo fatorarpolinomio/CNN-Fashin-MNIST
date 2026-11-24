@@ -42,11 +42,11 @@ class EarlyStopping:
 
                 # Opção verbosa, para ajudar com depuração
                 if self.verbose:
-                    print("Stopping early as no improvement has been observed.")
+                    print("Fazendo a parada antecipada, dado que melhorias não foram observadas")
 
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
-    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
+    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "CPU"
     print(f"Usando o dispositivo: {device}")
     return device
 
@@ -74,7 +74,7 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
         if batch % 100 == 0:
             # Printando a loss atual
             loss, current = loss.item(), batch * train_dataloader.batch_size + len(X)
-            print(f"Loss: {loss:>7f} [{current:>5d}/{size:>5d}]")
+            print(f"Perda: {loss:>7f} [{current:>5d}/{size:>5d}]")
 
 def test_loop(test_dataloader, model, loss_function, device, validation=False):
 
@@ -99,9 +99,9 @@ def test_loop(test_dataloader, model, loss_function, device, validation=False):
     correct /= size
 
     if not validation:
-        print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+        print(f"Erro de Teste: \n Acurácia: {(100*correct):>0.1f}%, Perda Média: {test_loss:>8f} \n")
     else:
-        print(f"Validation Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
+        print(f"Erro de Validação: \n Acurácia: {(100*correct):>0.1f}%, Perda Média: {test_loss:>8f} \n")
 
     return test_loss
 
@@ -128,7 +128,7 @@ def model_training(
     early_stopping = EarlyStopping(model, patience=patience, delta=delta, verbose=verbose)
 
     for t in range(epochs):
-        print(f"Epoch {t+1}\n-------------------")
+        print(f"Época {t+1}\n-------------------")
         train_loop(train_dataloader, model, loss_function, optimizer, device)
         test_loss = test_loop(validation_dataloader, model, loss_function, device, validation=True)
 
@@ -137,11 +137,11 @@ def model_training(
 
         # Aplicando a parada, se for o caso
         if early_stopping.stop_training:
-            print(f"Early stopping at epoch {t}")
+            print(f"Parando antecipadamente na época: {t}")
             break
 
     if early_stopping.best_state is not None:
         model.load_state_dict(early_stopping.best_state)
 
     test_loop(test_dataloader, model, loss_function, device, validation=False)
-    print("Finished!")
+    print("Finalizado!")
