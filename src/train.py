@@ -45,6 +45,13 @@ class EarlyStopping:
                 if self.verbose:
                     print("Fazendo a parada antecipada, dado que melhorias não foram observadas")
 
+# otimizador do config
+def build_optimizer(modelo, config):
+    t = config["treino"]
+    if t["otimizador"] == "adam":
+        return torch.optim.Adam(modelo.parameters(), lr=t["lr"])
+    return torch.optim.SGD(modelo.parameters(), lr=t["lr"], momentum=0.9)
+
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
     device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
