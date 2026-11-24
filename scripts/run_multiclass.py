@@ -24,7 +24,8 @@ device = train.get_device_for_training()
 saida = utils.create_output_dir("multiclass")
 
 # 2) Dados
-train_data, val_data, test_data = dataset.load_fashionMNIST(config["seed"])
+train_data, test_data = dataset.load_fashionMNIST(config["seed"])
+train_data, val_data = dataset.split_train_val(train_data, config["seed"])
 train_dl, val_dl, test_dl = dataset.create_dataloaders(config, train_data, val_data, test_data)
 
 # 3) Modelo no dispositivo, função de perda e otimizador
