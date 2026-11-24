@@ -44,7 +44,7 @@ utils.save_weights(modelo, saida / utils.PESOS_INICIAIS_PT)
 # 5) Treino
 historico = train.model_training(
     modelo, train_dl, val_dl, test_dl,
-    loss_function, optimizer, device, config, config["treino"]["epocas"]
+    loss_function, optimizer, device, config
 )
 
 # 6) Saídas finais
