@@ -9,7 +9,6 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 """
 
 import torch
-from torch import nn
 import copy
 
 # Classe para implementar a parada antecipada
@@ -20,6 +19,7 @@ class EarlyStopping:
         self.delta = delta # mudança mínima na perda
         self.verbose = verbose # booleano para indicar presença ou não de print para debug
         self.best_loss = None
+        self.best_state = None
         self.no_improvement_count = 0
         self.stop_training = False
 
@@ -46,7 +46,7 @@ class EarlyStopping:
 
 # Função para treinar modelo, se possível, com um acelerador, e.g. CUDA, MPS, MTIA ou XPU
 def get_device_for_training():
-    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "CPU"
+    device = torch.accelerator.current_accelerator().type if torch.accelerator.is_available() else "cpu"
     print(f"Usando o dispositivo: {device}")
     return device
 
@@ -56,6 +56,9 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
 
     # Selecionando modo de treino do modelo
     model.train()
+
+    # Definindo perda média do treinamento modelo
+    loss_treino = 0
 
     for batch, (X, y) in enumerate(train_dataloader):
 
@@ -71,10 +74,19 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
         optimizer.step()
         optimizer.zero_grad()
 
+        # Incrementando para dividir depois
+        loss_treino = loss_treino + loss.item()
+
         if batch % 100 == 0:
             # Printando a loss atual
             loss, current = loss.item(), batch * train_dataloader.batch_size + len(X)
             print(f"Perda: {loss:>7f} [{current:>5d}/{size:>5d}]")
+
+
+    # Realizando a divisão da soma pela quantidade de batchs
+    loss_treino /= len(train_dataloader)
+
+    return loss_treino
 
 def test_loop(test_dataloader, model, loss_function, device, validation=False):
 
@@ -103,7 +115,7 @@ def test_loop(test_dataloader, model, loss_function, device, validation=False):
     else:
         print(f"Erro de Validação: \n Acurácia: {(100*correct):>0.1f}%, Perda Média: {test_loss:>8f} \n")
 
-    return test_loss
+    return test_loss, correct
 
 
 
@@ -127,21 +139,31 @@ def model_training(
     # Inicializando mecanismo de parada antecipada
     early_stopping = EarlyStopping(model, patience=patience, delta=delta, verbose=verbose)
 
+    # Definindo lista de histórico
+    historico = []
+
     for t in range(epochs):
         print(f"Época {t+1}\n-------------------")
-        train_loop(train_dataloader, model, loss_function, optimizer, device)
-        test_loss = test_loop(validation_dataloader, model, loss_function, device, validation=True)
+        loss_treino = train_loop(train_dataloader, model, loss_function, optimizer, device)
+        val_loss, val_acc = test_loop(validation_dataloader, model, loss_function, device, validation=True)
 
         # Verificando condição da parada antecipada
-        early_stopping.check_early_stop(test_loss)
+        early_stopping.check_early_stop(val_loss)
+
+        # Atribuindo na lista para devolver depois
+        historico.append({"epoca": t + 1, "loss_treino": loss_treino,
+                          "loss_val": val_loss, "acc_val": val_acc})
 
         # Aplicando a parada, se for o caso
         if early_stopping.stop_training:
-            print(f"Parando antecipadamente na época: {t}")
+            print(f"Parando antecipadamente na época: {t+1}")
             break
 
     if early_stopping.best_state is not None:
+        print("Restaurando os pesos da melhor época")
         model.load_state_dict(early_stopping.best_state)
 
     test_loop(test_dataloader, model, loss_function, device, validation=False)
     print("Finalizado!")
+
+    return historico
