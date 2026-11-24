@@ -15,7 +15,6 @@ import random
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 import torch
 import yaml
 
@@ -68,16 +67,20 @@ def _eh_numero(valor):
 def validate_config(config):
     """Confere se o config.yaml tem o que o treino precisa; levanta ValueError com a causa
 
-    Valida seed, dados.batch_size e o bloco treino (otimizador, lr e epocas)
-    O bloco `binario` é validado em dataset.py (classes_para_indices)
+    Valida seed, dados.batch_size, o bloco treino (otimizador, lr e epocas),
+    o bloco modelo (filtros_bloco1, filtros_bloco2 e neuronios_densa) e
+    o bloco parada (patience, delta e verbose).
+    O bloco `binario` é validado em dataset.py (classes_para_indices).
     """
     if not isinstance(config, dict):
-        raise ValueError("config.yaml deve conter chaves e valores (seed, dados, treino, binario)")
+        raise ValueError(
+            "config.yaml deve conter chaves e valores (seed, dados, treino, modelo, parada, binario)"
+        )
 
     if not _eh_inteiro(config.get("seed")):
         raise ValueError(f"seed deve ser um inteiro, mas recebeu {config.get('seed')!r}")
 
-    for secao in ("dados", "treino"):
+    for secao in ("dados", "treino", "modelo", "parada"):
         if not isinstance(config.get(secao), dict):
             raise ValueError(f"config.yaml não tem a seção '{secao}'")
 
@@ -99,6 +102,26 @@ def validate_config(config):
     epocas = treino.get("epocas")
     if not _eh_inteiro(epocas) or epocas < 1:
         raise ValueError(f"treino.epocas deve ser um inteiro >= 1, mas recebeu {epocas!r}")
+
+    modelo = config["modelo"]
+    for chave in ("filtros_bloco1", "filtros_bloco2", "neuronios_densa"):
+        valor = modelo.get(chave)
+        if not _eh_inteiro(valor) or valor < 1:
+            raise ValueError(f"modelo.{chave} deve ser um inteiro >= 1, mas recebeu {valor!r}")
+
+    parada = config["parada"]
+
+    patience = parada.get("patience")
+    if not _eh_inteiro(patience) or patience < 1:
+        raise ValueError(f"parada.patience deve ser um inteiro >= 1, mas recebeu {patience!r}")
+
+    delta = parada.get("delta")
+    if not _eh_numero(delta) or delta < 0:
+        raise ValueError(f"parada.delta deve ser um número >= 0, mas recebeu {delta!r}")
+
+    verbose = parada.get("verbose")
+    if not isinstance(verbose, bool):
+        raise ValueError(f"parada.verbose deve ser um booleano (True ou False), mas recebeu {verbose!r}")
 
 def load_config(path=CONFIG_PATH):
     """Lê o config.yaml, valida e devolve um dicionário."""
