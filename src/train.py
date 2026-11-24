@@ -10,6 +10,7 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 
 import torch
 import copy
+from tqdm import tqdm
 
 # Classe para implementar a parada antecipada
 class EarlyStopping:
@@ -60,7 +61,10 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
     # Definindo perda média do treinamento modelo
     loss_treino = 0
 
-    for batch, (X, y) in enumerate(train_dataloader):
+    # Barra para acompanhar o progresso do treino
+    barra = tqdm(train_dataloader, desc="Treino")
+
+    for (X, y) in barra:
 
         # Utilizando dispositivo de aceleração
         X, y = X.to(device), y.to(device)
@@ -75,12 +79,9 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
         optimizer.zero_grad()
 
         # Incrementando para dividir depois
-        loss_treino = loss_treino + loss.item()
+        loss_treino += loss.item()
 
-        if batch % 100 == 0:
-            # Printando a loss atual
-            loss, current = loss.item(), batch * train_dataloader.batch_size + len(X)
-            print(f"Perda: {loss:>7f} [{current:>5d}/{size:>5d}]")
+        barra.set_postfix(perda=f"{loss.item():.4f}")   # mostra a perda na própria barra
 
 
     # Realizando a divisão da soma pela quantidade de batchs
