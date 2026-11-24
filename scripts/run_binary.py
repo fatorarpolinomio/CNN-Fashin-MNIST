@@ -8,6 +8,7 @@ Integrantes:
 run_binary.py: executa o experimento binário (par de classes definido em config.yaml).
 """
 
+import argparse
 import sys
 from pathlib import Path
 
@@ -17,18 +18,37 @@ import torch
 from torch import nn
 import utils, dataset, model, train
 
+def nome_do_par(config):
+    """Nome da pasta do par, ex.: 'T-shirt-top_vs_Shirt' (cada par guarda as suas saídas)."""
+    b = config["binario"]
+    lado = lambda nomes: "+".join(n.replace("/", "-").replace(" ", "") for n in nomes)
+    return f"{lado(b['classe_0'])}_vs_{lado(b['classe_1'])}"
+
+# 1) Argumentos opcionais: sobrescrevem o par de classes do config.yaml
+parser = argparse.ArgumentParser(description="Experimento binário (par de classes)")
+parser.add_argument("--classe0", nargs="+", help="nome(s) da classe com rótulo 0")
+parser.add_argument("--classe1", nargs="+", help="nome(s) da classe com rótulo 1")
+args = parser.parse_args()
+
 # Carregando e validando hiperparâmetros
 config = utils.load_config()
+if args.classe0:
+    config["binario"]["classe_0"] = args.classe0
+if args.classe1:
+    config["binario"]["classe_1"] = args.classe1
+
 utils.validate_config(config)
 
 # Fixando a seed de aleatoriedade
 utils.fix_seed(config["seed"])
 
 # Definindo local de saída
-saida = utils.create_output_dir("binary")
+saida = utils.create_output_dir("binary") / nome_do_par(config)
 
 # Buscando um dispositivo para realizar o treino
 device = train.get_device_for_training()
+
+print(f"Par de classes: {nome_do_par(config)}")
 
 # Carregando dataset
 train_dataset, test_dataset = dataset.load_fashionMNIST(config["seed"])
@@ -49,6 +69,7 @@ train_dl, val_dl, test_dl = dataset.create_dataloaders(
     val_dataset,
     test_dataset
 )
+print(f"Treino: {len(train_dataset)} | Validação: {len(val_dataset)} | Teste: {len(test_dataset)}")
 
 # Criando instância do nosso modelo
 model = model.NeuralNetwork(config, num_classes=2).to(device)
@@ -57,11 +78,7 @@ model = model.NeuralNetwork(config, num_classes=2).to(device)
 loss_function = nn.CrossEntropyLoss()
 
 # Construindo o otimizador
-lr = config["treino"]["lr"]
-if config["treino"]["otimizador"] == "adam":
-    optimizer = torch.optim.Adam(model.parameters(), lr=lr)
-else:
-    optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+optimizer = train.build_optimizer(model, config)
 
 # Pesos iniciais, antes de treinar
 utils.save_weights(model, saida / utils.PESOS_INICIAIS_PT)
@@ -90,3 +107,12 @@ utils.save_json(
     },
     saida / utils.HIPERPARAMETROS_JSON,
 )
+
+# Resumo para preencher a tabela de comparação dos pares (a época dos pesos restaurados)
+melhor = min(historico, key=lambda h: h["loss_val"])
+print(f"Melhor época: {melhor['epoca']} | perda de validação: {melhor['loss_val']:.4f} "
+      f"| acurácia de validação: {melhor['acc_val']:.4f}")
+print(f"Saídas salvas em: {saida}")
+
+# TODO (task #7): chamar a avaliação no teste aqui, para gerar saidas_teste.csv
+# e matriz_confusao.png a partir dos pesos finais.
