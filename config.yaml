@@ -15,6 +15,12 @@ treino:
   lr: 0.001          # taxa de aprendizado
   epocas: 10
 
+# Hiperparâmetros da parada antecipada
+parada:
+  patience: 3
+  delta: 0
+  verbose: True
+
 # Tarefa binária
 # Cada lado é uma Lista de nomes de classes; mais de um nome forma uma composição.
 # Nomes válidos: T-shirt/top, Trouser, Pullover, Dress, Coat, Sandal, Shirt,
