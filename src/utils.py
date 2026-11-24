@@ -15,6 +15,7 @@ import random
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import torch
 import yaml
 
@@ -26,7 +27,7 @@ OUTPUTS_DIR = RAIZ / "outputs"
 # Experimentos: cada um tem a sua pasta em outputs/<experimento>/
 EXPERIMENTOS = ("multiclass", "binary", "hog")
 
-# Otimizadores aceitos em config.yaml 
+# Otimizadores aceitos em config.yaml
 OTIMIZADORES = ("adam", "sgd")
 
 # Nomes dos arquivos de saída de cada experimento (os mesmos listados no README e na spec do trabalho)
@@ -113,7 +114,7 @@ def load_config(path=CONFIG_PATH):
 
 def create_output_dir(experimento, base=OUTPUTS_DIR):
     """Cria (se não existir) a pasta outputs/<experimento>/ e devolve o seu caminho """
-    
+
     if experimento not in EXPERIMENTOS:
         raise ValueError(f"experimento deve ser um de {list(EXPERIMENTOS)}, mas recebeu {experimento!r}")
 
@@ -181,4 +182,11 @@ def save_csv(linhas, caminho, colunas=None):
         escritor.writerow(colunas)
         escritor.writerows(valores)
 
+    return caminho
+
+def save_weights(model, caminho):
+    """Salva os pesos (state_dict) do modelo e devolve o caminho."""
+    caminho = Path(caminho)
+    caminho.parent.mkdir(parents=True, exist_ok=True)
+    torch.save(model.state_dict(), caminho)
     return caminho
