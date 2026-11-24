@@ -10,13 +10,15 @@ train.py: lógica de treinamento (laço de épocas, função de erro, otimizador
 
 import torch
 from torch import nn
+import copy
 
 # Classe para implementar a parada antecipada
 class EarlyStopping:
-    def __init__(self, patience=5, delta=0, verbose=False):
-        self.patience = patience
-        self.delta = delta
-        self.verbose = verbose
+    def __init__(self, model, patience=5, delta=0, verbose=False):
+        self.model = model
+        self.patience = patience # paciência, definida por padrão como 5, mas é possível alterar
+        self.delta = delta # mudança mínima na perda
+        self.verbose = verbose # booleano para indicar presença ou não de print para debug
         self.best_loss = None
         self.no_improvement_count = 0
         self.stop_training = False
@@ -26,6 +28,7 @@ class EarlyStopping:
         if self.best_loss is None or val_loss < self.best_loss - self.delta:
             # Guardando a melhor loss que apareceu durante a validação
             self.best_loss = val_loss
+            self.best_state = copy.deepcopy(self.model.state_dict())  # cópia dos melhores pesos
             # Zerando contador de ausência de melhorias, dado que uma melhoria aconteceu
             self.no_improvement_count = 0
         else:
@@ -100,6 +103,8 @@ def test_loop(test_dataloader, model, loss_function, device, validation=False):
     else:
         print(f"Validation Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
+    return test_loss
+
 
 
 def model_training(
@@ -110,12 +115,33 @@ def model_training(
     loss_function,
     optimizer,
     device,
+    config,
     epochs : int
 ):
+    # Buscando os hiperparâmetros definidos no config.yaml
+    cfg = config["parada"]
+    patience = cfg["patience"] # Número de paciência
+    delta = cfg["delta"] # mudança mínima na perda
+    verbose = cfg["verbose"] # com ou sem print de depuração
+
+    # Inicializando mecanismo de parada antecipada
+    early_stopping = EarlyStopping(model, patience=patience, delta=delta, verbose=verbose)
+
     for t in range(epochs):
         print(f"Epoch {t+1}\n-------------------")
         train_loop(train_dataloader, model, loss_function, optimizer, device)
-        test_loop(validation_dataloader, model, loss_function, device, validation=True)
+        test_loss = test_loop(validation_dataloader, model, loss_function, device, validation=True)
+
+        # Verificando condição da parada antecipada
+        early_stopping.check_early_stop(test_loss)
+
+        # Aplicando a parada, se for o caso
+        if early_stopping.stop_training:
+            print(f"Early stopping at epoch {t}")
+            break
+
+    if early_stopping.best_state is not None:
+        model.load_state_dict(early_stopping.best_state)
 
     test_loop(test_dataloader, model, loss_function, device, validation=False)
     print("Finished!")
