@@ -1,0 +1,32 @@
+{
+  "seed": 42,
+  "dados": {
+    "batch_size": 64
+  },
+  "modelo": {
+    "filtros_bloco1": 16,
+    "filtros_bloco2": 32,
+    "neuronios_densa": 128
+  },
+  "treino": {
+    "otimizador": "adam",
+    "lr": 0.001,
+    "epocas": 10
+  },
+  "parada": {
+    "patience": 3,
+    "delta": 0,
+    "verbose": true
+  },
+  "binario": {
+    "classe_0": [
+      "T-shirt/top"
+    ],
+    "classe_1": [
+      "Shirt"
+    ]
+  },
+  "num_classes": 2,
+  "dispositivo": "cpu",
+  "inicializacao": "padrão do PyTorch para Conv2d e Linear"
+}
