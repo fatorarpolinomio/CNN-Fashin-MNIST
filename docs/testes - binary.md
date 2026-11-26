@@ -49,3 +49,24 @@ acurácia de validação: 0.9862
 ```
 
 ## Dress vs Coat
+
+1) Parada antecipada
+
+```
+Parando antecipadamente na época: 13
+```
+
+2) Erro realizado no teste
+
+```
+Erro de Teste:
+Acurácia: 96.5%, Perda Média: 0.079003
+```
+
+3) Resumo ao final
+
+```
+Melhor época: 10 | 
+perda de validação: 0.0823 | 
+acurácia de validação: 0.9588
+```
