@@ -5,7 +5,8 @@ Integrantes:
     Lucas Neves Souza, Nro. USP: 15577627
     Willian Jefferson Farias, Nro. USP: 15642665
 
-run_binary.py: executa o experimento binário (par de classes definido em config.yaml).
+run_binary.py: executa o experimento binário. O par de classes vem do config.yaml
+ou, se informado, da linha de comando (ex.: --classe0 Trouser --classe1 Bag).
 """
 
 import argparse
@@ -14,9 +15,8 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
-import torch
 from torch import nn
-import utils, dataset, model, train
+import utils, dataset, modelo, train
 
 def nome_do_par(config):
     """Nome da pasta do par, ex.: 'T-shirt-top_vs_Shirt' (cada par guarda as suas saídas)."""
@@ -36,8 +36,6 @@ if args.classe0:
     config["binario"]["classe_0"] = args.classe0
 if args.classe1:
     config["binario"]["classe_1"] = args.classe1
-
-utils.validate_config(config)
 
 # Fixando a seed de aleatoriedade
 utils.fix_seed(config["seed"])
@@ -72,20 +70,20 @@ train_dl, val_dl, test_dl = dataset.create_dataloaders(
 print(f"Treino: {len(train_dataset)} | Validação: {len(val_dataset)} | Teste: {len(test_dataset)}")
 
 # Criando instância do nosso modelo
-model = model.NeuralNetwork(config, num_classes=2).to(device)
+modelo = modelo.NeuralNetwork(config, num_classes=2).to(device)
 
 # Definindo nossa loss function
 loss_function = nn.CrossEntropyLoss()
 
 # Construindo o otimizador
-optimizer = train.build_optimizer(model, config)
+optimizer = train.build_optimizer(modelo, config)
 
 # Pesos iniciais, antes de treinar
-utils.save_weights(model, saida / utils.PESOS_INICIAIS_PT)
+utils.save_weights(modelo, saida / utils.PESOS_INICIAIS_PT)
 
 # Realizando treinamento do modelo e salvando lista de histórico
-historico = train.model_training(
-    model,
+historico = train.modelo_training(
+    modelo,
     train_dl,
     val_dl,
     test_dl,
@@ -96,7 +94,7 @@ historico = train.model_training(
 )
 
 # Saídas finais
-utils.save_weights(model, saida / utils.PESOS_FINAIS_PT)  # já com os melhores pesos restaurados
+utils.save_weights(modelo, saida / utils.PESOS_FINAIS_PT)  # já com os melhores pesos restaurados
 utils.save_csv(historico, saida / utils.ERRO_POR_ITERACAO_CSV)
 utils.save_json(
     {
