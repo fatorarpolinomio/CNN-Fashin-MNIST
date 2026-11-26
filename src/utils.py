@@ -49,7 +49,7 @@ def fix_seed(seed):
     """
     random.seed(seed)
     np.random.seed(seed)
-    torch.manual_seed(seed)
+    torch.manual_seed(seed) 
     torch.cuda.manual_seed_all(seed)  # não faz nada se não houver GPU
     torch.backends.cudnn.deterministic = True  # comente se quiser velocidade
     torch.backends.cudnn.benchmark = False

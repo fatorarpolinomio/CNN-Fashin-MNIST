@@ -37,6 +37,7 @@ Os hiperparâmetros (taxa de aprendizado, épocas, batch size, otimizador, class
 ```bash
 python tests/test_binario.py
 python tests/test_utils.py
+python tests/test_evaluate.py
 ```
 
 Execute sempre a partir da raiz do projeto.
