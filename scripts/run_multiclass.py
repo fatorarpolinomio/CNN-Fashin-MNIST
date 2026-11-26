@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
 import torch
 from torch import nn
-import utils, dataset, model, train
+import utils, dataset, model, train, evaluate
 
 # 1) Configuração, seed (antes de criar o modelo) e pasta de saída
 config = utils.load_config()
@@ -59,3 +59,6 @@ utils.save_json(
     },
     saida / utils.HIPERPARAMETROS_JSON,
 )
+
+# 7) Avaliação no teste com os pesos finais salvos (saidas_teste.csv e matriz_confusao.png)
+evaluate.avaliar_experimento(saida, device)
