@@ -70,3 +70,26 @@ Melhor época: 10 |
 perda de validação: 0.0823 | 
 acurácia de validação: 0.9588
 ```
+
+## Pullover vs Shirt
+
+1) Parada antecipada
+
+```
+Parando antecipadamente na época: 11
+```
+
+2) Erro realizado no teste
+
+```
+Erro de Teste:
+Acurácia: 91.5%, Perda Média: 0.227070
+```
+
+3) Resumo ao final
+
+```
+Melhor época: 8 | 
+perda de validação: 0.1721 | 
+acurácia de validação: 0.9286
+```
