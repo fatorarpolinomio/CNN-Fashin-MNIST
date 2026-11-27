@@ -4,14 +4,14 @@
     "batch_size": 64
   },
   "modelo": {
-    "filtros_bloco1": 16,
-    "filtros_bloco2": 32,
+    "filtros_bloco1": 32,
+    "filtros_bloco2": 64,
     "neuronios_densa": 128
   },
   "treino": {
     "otimizador": "adam",
     "lr": 0.001,
-    "epocas": 10
+    "epocas": 20
   },
   "parada": {
     "patience": 3,

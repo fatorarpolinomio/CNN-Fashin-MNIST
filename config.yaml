@@ -4,8 +4,8 @@ dados:
 
 # Hiperparâmetros do modelo
 modelo:
-  filtros_bloco1: 16
-  filtros_bloco2: 32
+  filtros_bloco1: 32
+  filtros_bloco2: 64
   neuronios_densa: 128
 
 # Hiperparâmetros de treino (valem para os três experimentos)
@@ -13,7 +13,7 @@ modelo:
 treino:
   otimizador: adam   # "adam" ou "sgd" (em minúsculas)
   lr: 0.001          # taxa de aprendizado
-  epocas: 10
+  epocas: 20
 
 # Hiperparâmetros da parada antecipada
 parada:

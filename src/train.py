@@ -122,7 +122,7 @@ def test_loop(test_dataloader, model, loss_function, device, imprimir=True):
     correct /= size
 
     if imprimir:
-        print(f"Teste | perda: {test_loss:.4f} | acurácia: {100*correct:.2f}%\n")
+        print(f"Teste | perda: {test_loss:>8f} | acurácia: {100*correct:.2f}%\n")
 
     return test_loss, correct
 
@@ -156,8 +156,8 @@ def model_training(
         val_loss, val_acc = test_loop(validation_dataloader, model, loss_function, device, imprimir=False)
 
         # Resumo da época: treino e validação lado a lado
-        print(f"Treino    | perda: {loss_treino:.4f} | acurácia: {100*acc_treino:.2f}%")
-        print(f"Validação | perda: {val_loss:.4f} | acurácia: {100*val_acc:.2f}%\n")
+        print(f"Treino    | perda: {loss_treino:>8f} | acurácia: {100*acc_treino:.2f}%")
+        print(f"Validação | perda: {val_loss:>8f} | acurácia: {100*val_acc:.2f}%\n")
 
         # Verificando condição da parada antecipada
         early_stopping.check_early_stop(val_loss)
