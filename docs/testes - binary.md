@@ -120,3 +120,16 @@ Melhor época: 8 |
 perda de validação: 0.1721 | 
 acurácia de validação: 0.9286
 ```
+
+4) Precisão, Recall, F1 e Suporte
+
+```
+Classe        Precisão     Recall         F1   Suporte
+-------------------------------------------------------
+Pullover        0.9150     0.9150     0.9150      1000
+Shirt           0.9150     0.9150     0.9150      1000
+-------------------------------------------------------
+Média macro     0.9150     0.9150     0.9150      2000
+
+Erro mais frequente: 'Pullover' previsto como 'Shirt' (85 exemplos)
+```
