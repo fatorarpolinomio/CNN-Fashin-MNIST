@@ -64,8 +64,10 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
     # Selecionando modo de treino do modelo
     model.train()
 
-    # Definindo perda média do treinamento modelo
-    loss_treino = 0
+    size = len(train_dataloader.dataset)
+
+    # Definindo perda média e acertos acumulados do treinamento
+    loss_treino, correct = 0, 0
 
     # Barra para acompanhar o progresso do treino
     barra = tqdm(train_dataloader, desc="Treino")
@@ -86,16 +88,18 @@ def train_loop(train_dataloader, model, loss_function, optimizer, device):
 
         # Incrementando para dividir depois
         loss_treino += loss.item()
+        correct += (prediction.argmax(1) == y).sum().item()
 
         barra.set_postfix(perda=f"{loss.item():.4f}")   # mostra a perda na própria barra
 
 
     # Realizando a divisão da soma pela quantidade de batchs
     loss_treino /= len(train_dataloader)
+    acc_treino = correct / size
 
-    return loss_treino
+    return loss_treino, acc_treino
 
-def test_loop(test_dataloader, model, loss_function, device, validation=False):
+def test_loop(test_dataloader, model, loss_function, device, imprimir=True):
 
     # Selecionando o modo de avaliação do modelo
     model.eval()
@@ -117,10 +121,8 @@ def test_loop(test_dataloader, model, loss_function, device, validation=False):
     test_loss /= num_batches
     correct /= size
 
-    if not validation:
-        print(f"Erro de Teste: \n Acurácia: {(100*correct):>0.1f}%, Perda Média: {test_loss:>8f} \n")
-    else:
-        print(f"Erro de Validação: \n Acurácia: {(100*correct):>0.1f}%, Perda Média: {test_loss:>8f} \n")
+    if imprimir:
+        print(f"Teste | perda: {test_loss:>8f} | acurácia: {100*correct:.2f}%\n")
 
     return test_loss, correct
 
@@ -149,15 +151,19 @@ def model_training(
     historico = []
 
     for t in range(epochs):
-        print(f"Época {t+1}\n-------------------")
-        loss_treino = train_loop(train_dataloader, model, loss_function, optimizer, device)
-        val_loss, val_acc = test_loop(validation_dataloader, model, loss_function, device, validation=True)
+        print(f"Época {t+1}/{epochs}\n-------------------")
+        loss_treino, acc_treino = train_loop(train_dataloader, model, loss_function, optimizer, device)
+        val_loss, val_acc = test_loop(validation_dataloader, model, loss_function, device, imprimir=False)
+
+        # Resumo da época: treino e validação lado a lado
+        print(f"Treino    | perda: {loss_treino:>8f} | acurácia: {100*acc_treino:.2f}%")
+        print(f"Validação | perda: {val_loss:>8f} | acurácia: {100*val_acc:.2f}%\n")
 
         # Verificando condição da parada antecipada
         early_stopping.check_early_stop(val_loss)
 
         # Atribuindo na lista para devolver depois
-        historico.append({"epoca": t + 1, "loss_treino": loss_treino,
+        historico.append({"epoca": t + 1, "loss_treino": loss_treino, "acc_treino": acc_treino,
                           "loss_val": val_loss, "acc_val": val_acc})
 
         # Aplicando a parada, se for o caso
@@ -169,7 +175,7 @@ def model_training(
         print("Restaurando os pesos da melhor época")
         model.load_state_dict(early_stopping.best_state)
 
-    test_loop(test_dataloader, model, loss_function, device, validation=False)
+    test_loop(test_dataloader, model, loss_function, device)
     print("Finalizado!")
 
     return historico

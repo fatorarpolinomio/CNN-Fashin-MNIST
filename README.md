@@ -64,6 +64,15 @@ Cada experimento gera, em `outputs/<experimento>/`:
 - `saidas_teste.csv`: saídas da rede para cada dado de teste
 - `matriz_confusao.png`: matriz de confusão do teste
 
+## Resultados finais (multiclasse)
+
+| Métrica | Valor |
+|---------|-------|
+| Acurácia | 91,72% |
+| Precisão (média macro) | 0,9172 |
+| Recall (média macro) | 0,9172 |
+| F1 (média macro) | 0,9168 |
+
 ## Contribuidores
 
 <a href="https://github.com/fatorarpolinomio/CNN-Fashin-MNIST/graphs/contributors">
