@@ -25,6 +25,19 @@ perda de validação: 0.2762 |
 acurácia de validação: 0.8757
 ```
 
+4) Precisão, Recall, F1 e Suporte
+
+```
+Classe        Precisão     Recall         F1   Suporte
+-------------------------------------------------------
+T-shirt/top     0.8902     0.8590     0.8743      1000
+Shirt           0.8638     0.8940     0.8786      1000
+-------------------------------------------------------
+Média macro     0.8770     0.8765     0.8765      2000
+
+Erro mais frequente: 'T-shirt/top' previsto como 'Shirt' (141 exemplos)
+```
+
 ## Sneaker vs Sandal
 
 1) Parada antecipada
