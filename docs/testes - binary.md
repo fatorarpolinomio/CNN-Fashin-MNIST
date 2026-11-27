@@ -98,6 +98,19 @@ perda de validação: 0.0823 |
 acurácia de validação: 0.9588
 ```
 
+4) Precisão, Recall, F1 e Suporte
+
+```
+Classe        Precisão     Recall         F1   Suporte
+-------------------------------------------------------
+Dress           0.9688     0.9610     0.9649      1000
+Coat            0.9613     0.9690     0.9651      1000
+-------------------------------------------------------
+Média macro     0.9650     0.9650     0.9650      2000
+
+Erro mais frequente: 'Dress' previsto como 'Coat' (39 exemplos)
+```
+
 ## Pullover vs Shirt
 
 1) Parada antecipada
