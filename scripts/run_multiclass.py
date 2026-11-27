@@ -13,7 +13,6 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
-import torch
 from torch import nn
 import utils, dataset, model, train, evaluate
 
@@ -32,11 +31,13 @@ train_dl, val_dl, test_dl = dataset.create_dataloaders(config, train_data, val_d
 modelo = model.NeuralNetwork(config, num_classes=10).to(device)
 loss_function = nn.CrossEntropyLoss()
 
-lr = config["treino"]["lr"]
-if config["treino"]["otimizador"] == "adam":
-    optimizer = torch.optim.Adam(modelo.parameters(), lr=lr)
-else:
-    optimizer = torch.optim.SGD(modelo.parameters(), lr=lr)
+optimizer = train.build_optimizer(modelo, config)
+
+#lr = config["treino"]["lr"]
+#if config["treino"]["otimizador"] == "adam":
+#    optimizer = torch.optim.Adam(modelo.parameters(), lr=lr)
+#else:
+#    optimizer = torch.optim.SGD(modelo.parameters(), lr=lr)
 
 # 4) Pesos iniciais, antes de treinar
 utils.save_weights(modelo, saida / utils.PESOS_INICIAIS_PT)
