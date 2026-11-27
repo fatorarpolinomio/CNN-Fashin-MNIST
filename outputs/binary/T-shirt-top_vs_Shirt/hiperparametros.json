@@ -11,7 +11,7 @@
   "treino": {
     "otimizador": "adam",
     "lr": 0.001,
-    "epocas": 10
+    "epocas": 15
   },
   "parada": {
     "patience": 3,
