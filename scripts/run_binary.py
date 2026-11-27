@@ -16,7 +16,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).resolve().parent.parent / "src"))
 
 from torch import nn
-import utils, dataset, modelo, train
+import utils, dataset, model, train, evaluate
 
 def nome_do_par(config):
     """Nome da pasta do par, ex.: 'T-shirt-top_vs_Shirt' (cada par guarda as suas saídas)."""
@@ -70,7 +70,7 @@ train_dl, val_dl, test_dl = dataset.create_dataloaders(
 print(f"Treino: {len(train_dataset)} | Validação: {len(val_dataset)} | Teste: {len(test_dataset)}")
 
 # Criando instância do nosso modelo
-modelo = modelo.NeuralNetwork(config, num_classes=2).to(device)
+modelo = model.NeuralNetwork(config, num_classes=2).to(device)
 
 # Definindo nossa loss function
 loss_function = nn.CrossEntropyLoss()
@@ -82,7 +82,7 @@ optimizer = train.build_optimizer(modelo, config)
 utils.save_weights(modelo, saida / utils.PESOS_INICIAIS_PT)
 
 # Realizando treinamento do modelo e salvando lista de histórico
-historico = train.modelo_training(
+historico = train.model_training(
     modelo,
     train_dl,
     val_dl,
@@ -112,5 +112,5 @@ print(f"Melhor época: {melhor['epoca']} | perda de validação: {melhor['loss_v
       f"| acurácia de validação: {melhor['acc_val']:.4f}")
 print(f"Saídas salvas em: {saida}")
 
-# TODO (task #7): chamar a avaliação no teste aqui, para gerar saidas_teste.csv
-# e matriz_confusao.png a partir dos pesos finais.
+# Avaliação no teste com os pesos finais salvos (saidas_teste.csv e matriz_confusao.png)
+evaluate.avaliar_experimento(saida, device)
